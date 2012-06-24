@@ -8,6 +8,9 @@ function Vim() {
   this.cursor = 0;
 }
 Vim.prototype.changeText = function (i, j, s) {
+  if (i < this.cursor) {
+    this.cursor -= Math.min(j-i, this.cursor-i);
+  }
   this.buffer = this.buffer.substring(0, i) + s + this.buffer.substring(j, this.buffer.length);
 };
 // Given an absolute cursor position, find the cursor position of the first
@@ -176,6 +179,20 @@ Vim.prototype.input = function (str) {
             break;
           case 'D':
             this.changeText(this.cursor, this.lineEnd(), '');
+            break;
+          case 'd':
+            var m = nextc();
+            var i, j;
+            if (m == 'd') {
+              i = this.lineBegin();
+              j = this.lineEnd();
+            } else {
+              var motion = this.getMotion(m, nextc);
+              var movement = this.parseMotion(motion);
+              i = movement.from;
+              j = movement.lastIncluded;
+            }
+            this.changeText(i, j, '');
             break;
           case 'o':
             this.cursor = this.lineEnd();

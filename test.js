@@ -35,5 +35,7 @@ window.onload = function () {
   t('iabc\x1b0lid', 'adbc\n');
   t('iabc\ndef\x1bkig', 'abgc\ndef\n');
   t('iabc\x1bOdef\x1bjig', 'def\nabgc\n');
+  t('iabc\x1bdd', '\n');
+  t('iabc\x1bddidef', 'def\n');
 };
 // vim:set sw=2 sts=2 et:
