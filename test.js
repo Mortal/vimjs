@@ -29,5 +29,6 @@ window.onload = function () {
   t('Shej\x1b', 'hej\n');
   t('ihej\x1b0Difarvel\x1b', 'farvel\n');
   t('ihej\nhej\x1b0Difarvel\x1b', 'hej\nfarvel\n');
+  t('ihej\x1bihej\x1b', 'hehejj\n');
 };
 // vim:set sw=2 sts=2 et:

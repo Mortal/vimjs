@@ -10,17 +10,28 @@ function Vim() {
 Vim.prototype.changeText = function (i, j, s) {
   this.buffer = this.buffer.substring(0, i) + s + this.buffer.substring(j, this.buffer.length);
 };
-Vim.prototype.lineStart = function (i) {
-  if ('undefined' == typeof i) i = this.cursor;
-  while (i && this.buffer.charAt(i-1) != '\n')
-    --i;
-  return i;
+// Given an absolute cursor position, find the cursor position of the first
+// character in the same line.
+Vim.prototype.lineStart = function (cursorPos) {
+  if ('undefined' == typeof cursorPos)
+    cursorPos = this.cursor;
+  while (cursorPos && this.buffer.charAt(cursorPos-1) != '\n')
+    --cursorPos;
+  return cursorPos;
 };
-Vim.prototype.lineEnd = function (i) {
-  if ('undefined' == typeof i) i = this.cursor;
-  while (i < this.buffer.length && this.buffer.charAt(i) != '\n')
-    ++i;
-  return i;
+// Given an absolute cursor position, find the cursor position of the newline
+// character terminating the same line.
+Vim.prototype.lineEnd = function (cursorPos) {
+  if ('undefined' == typeof cursorPos)
+    cursorPos = this.cursor;
+  while (cursorPos < this.buffer.length && this.buffer.charAt(cursorPos) != '\n')
+    ++cursorPos;
+  return cursorPos;
+};
+// Given an absolute cursor position, find the number of characters until the
+// first character in the same line.
+Vim.prototype.lineOffset = function (cursorPos) {
+  return cursorPos-this.lineStart();
 };
 Vim.prototype.addText = function (c) {
   this.changeText(this.cursor, this.cursor, c);
@@ -52,6 +63,8 @@ Vim.prototype.input = function (str) {
       case Mode.INSERT:
         if (c == '\x1b') {
           this.mode = Mode.NORMAL;
+          if (this.cursor && this.buffer.charAt(this.cursor-1) != '\n')
+            --this.cursor;
           break;
         }
         this.addText(c);
