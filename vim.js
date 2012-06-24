@@ -12,7 +12,7 @@ Vim.prototype.changeText = function (i, j, s) {
 };
 // Given an absolute cursor position, find the cursor position of the first
 // character in the same line.
-Vim.prototype.lineStart = function (cursorPos) {
+Vim.prototype.lineBegin = function (cursorPos) {
   if ('undefined' == typeof cursorPos)
     cursorPos = this.cursor;
   while (cursorPos && this.buffer.charAt(cursorPos-1) != '\n')
@@ -33,7 +33,7 @@ Vim.prototype.lineEnd = function (cursorPos) {
 Vim.prototype.lineOffset = function (cursorPos) {
   if ('undefined' == typeof cursorPos)
     cursorPos = this.cursor;
-  return cursorPos-this.lineStart();
+  return cursorPos-this.lineBegin();
 };
 Vim.prototype.moveLines = function (lines) {
   while (lines > 0) {
@@ -67,7 +67,7 @@ Vim.prototype.input = function (str) {
             this.mode = Mode.INSERT;
             break;
           case '0':
-            this.cursor = this.lineStart();
+            this.cursor = this.lineBegin();
             break;
           case 'D':
             this.changeText(this.cursor, this.lineEnd(), '');
@@ -78,7 +78,7 @@ Vim.prototype.input = function (str) {
             this.mode = Mode.INSERT;
             break;
           case 'O':
-            this.cursor = this.lineStart();
+            this.cursor = this.lineBegin();
             this.addText('\n');
             --this.cursor;
             this.mode = Mode.INSERT;
@@ -92,12 +92,12 @@ Vim.prototype.input = function (str) {
           case 'j':
             var lineOffset = this.lineOffset();
             this.moveLines(1);
-            this.cursor = this.lineStart() + lineOffset;
+            this.cursor = this.lineBegin() + lineOffset;
             break;
           case 'k':
             var lineOffset = this.lineOffset();
             this.moveLines(-1);
-            this.cursor = this.lineStart() + lineOffset;
+            this.cursor = this.lineBegin() + lineOffset;
             break;
         }
         break;
