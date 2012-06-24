@@ -58,6 +58,17 @@ Vim.prototype.input = function (str) {
           case 'D':
             this.changeText(this.cursor, this.lineEnd(), '');
             break;
+          case 'o':
+            this.cursor = this.lineEnd();
+            this.addText('\n');
+            this.mode = Mode.INSERT;
+            break;
+          case 'O':
+            this.cursor = this.lineStart();
+            this.addText('\n');
+            --this.cursor;
+            this.mode = Mode.INSERT;
+            break;
         }
         break;
       case Mode.INSERT:
