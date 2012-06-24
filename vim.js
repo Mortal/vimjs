@@ -109,7 +109,7 @@ Vim.prototype.parseMotion = function (motion) {
     case 'W':
     case 'E':
       var WORD = (motion == 'W' || motion == 'E');
-      var end = (motino == 'e' || motion == 'E');
+      var end = (motion == 'e' || motion == 'E');
       var i = this.cursor;
       var j = i;
       // isKeyword returns either
@@ -152,6 +152,7 @@ Vim.prototype.parseMotion = function (motion) {
             }
             break;
         }
+        ++j;
       }
       return exclusive_motion(i, j);
     case '0':
