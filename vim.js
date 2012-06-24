@@ -10,6 +10,18 @@ function Vim() {
 Vim.prototype.changeText = function (i, j, s) {
   this.buffer = this.buffer.substring(0, i) + s + this.buffer.substring(j, this.buffer.length);
 };
+Vim.prototype.lineStart = function (i) {
+  if ('undefined' == typeof i) i = this.cursor;
+  while (i && this.buffer.charAt(i-1) != '\n')
+    --i;
+  return i;
+};
+Vim.prototype.lineEnd = function (i) {
+  if ('undefined' == typeof i) i = this.cursor;
+  while (i < this.buffer.length && this.buffer.charAt(i) != '\n')
+    ++i;
+  return i;
+};
 Vim.prototype.addText = function (c) {
   this.changeText(this.cursor, this.cursor, c);
   this.cursor += c.length;
@@ -30,13 +42,11 @@ Vim.prototype.input = function (str) {
             this.mode = Mode.INSERT;
             break;
           case '0':
-            while (this.cursor && this.buffer.charAt(this.cursor-1) != '\n')
-              --this.cursor;
+            this.cursor = this.lineStart();
+            break;
           case 'D':
-            var j = this.cursor;
-            while (j < this.buffer.length && this.buffer.charAt(j) != '\n')
-              ++j;
-            this.changeText(this.cursor, j, '');
+            this.changeText(this.cursor, this.lineEnd(), '');
+            break;
         }
         break;
       case Mode.INSERT:
