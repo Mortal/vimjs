@@ -1,8 +1,3 @@
-function expectbuffer(str, buf) {
-  var v = new Vim();
-  v.input(str);
-  return v.getBuffer() == buf;
-}
 function vimescape(s) {
   return s.replace(/\x1b/g, '<Esc>')
     .replace(/\n/g, '<CR>');
@@ -13,10 +8,14 @@ function t(type, expect) {
   line.className = 'line';
   line.appendChild(document.createTextNode(vimescape(type)));
   res.appendChild(line);
-  if (expectbuffer(type, expect)) {
+  var v = new Vim();
+  v.input(type);
+  var buf = v.getBuffer();
+  if (buf == expect) {
     line.className += ' good';
   } else {
     line.className += ' bad';
+    line.title = 'Expected:\n'+expect+'\nbut got:\n'+buf;
   }
 }
 window.onload = function () {
@@ -37,5 +36,7 @@ window.onload = function () {
   t('iabc\x1bOdef\x1bjig', 'def\nabgc\n');
   t('iabc\x1bdd', '\n');
   t('iabc\x1bddidef', 'def\n');
+  t('iabc def\x1b0cwhej\x1b', 'hej def\n');
+  t('iabc def\x1b0dwihej\x1b', 'hejdef\n');
 };
 // vim:set sw=2 sts=2 et:
