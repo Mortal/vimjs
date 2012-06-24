@@ -35,6 +35,18 @@ Vim.prototype.lineOffset = function (cursorPos) {
     cursorPos = this.cursor;
   return cursorPos-this.lineStart();
 };
+Vim.prototype.moveLines = function (lines) {
+  while (lines > 0) {
+    if (this.cursor > this.buffer.length)
+      break;
+    if (this.buffer.charAt(this.cursor++) == '\n') --lines;
+  }
+  while (lines < 0) {
+    if (!this.cursor)
+      break;
+    if (this.buffer.charAt(--this.cursor) == '\n') --lines;
+  }
+};
 Vim.prototype.addText = function (c) {
   this.changeText(this.cursor, this.cursor, c);
   this.cursor += c.length;
@@ -78,27 +90,14 @@ Vim.prototype.input = function (str) {
             ++this.cursor;
             break;
           case 'j':
-            var initial = this.cursor;
             var lineOffset = this.lineOffset();
-            var i = this.lineEnd()+1;
-            if (i >= this.buffer.length) break;
-            for (var j = 0; j < lineOffset; ++j) {
-              if (this.buffer.charAt(i+1) != '\n')
-                ++i;
-            }
-            this.cursor = i;
+            this.moveLines(1);
+            this.cursor = this.lineStart() + lineOffset;
             break;
           case 'k':
-            var initial = this.cursor;
             var lineOffset = this.lineOffset();
-            var i = this.lineStart();
-            if (i == 0) break;
-            i = this.lineStart(i-1);
-            for (var j = 0; j < lineOffset; ++j) {
-              if (this.buffer.charAt(i+1) != '\n')
-                ++i;
-            }
-            this.cursor = i;
+            this.moveLines(-1);
+            this.cursor = this.lineStart() + lineOffset;
             break;
         }
         break;
