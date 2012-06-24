@@ -166,7 +166,9 @@ Vim.prototype.parseMotion = function (motion) {
 Vim.prototype.input = function (str) {
   for (var inputOffset = 0, l = str.length; inputOffset < l;) {
     function nextc() {
-      return str.charAt(inputOffset++);
+      if (inputOffset < str.length)
+        return str.charAt(inputOffset++);
+      return '';
     }
     var c = nextc();
     switch (this.mode) {
