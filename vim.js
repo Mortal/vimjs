@@ -31,6 +31,8 @@ Vim.prototype.lineEnd = function (cursorPos) {
 // Given an absolute cursor position, find the number of characters until the
 // first character in the same line.
 Vim.prototype.lineOffset = function (cursorPos) {
+  if ('undefined' == typeof cursorPos)
+    cursorPos = this.cursor;
   return cursorPos-this.lineStart();
 };
 Vim.prototype.addText = function (c) {
@@ -38,9 +40,9 @@ Vim.prototype.addText = function (c) {
   this.cursor += c.length;
 };
 Vim.prototype.input = function (str) {
-  for (var i = 0, l = str.length; i < l;) {
+  for (var inputOffset = 0, l = str.length; inputOffset < l;) {
     function nextc() {
-      return str.charAt(i++);
+      return str.charAt(inputOffset++);
     }
     var c = nextc();
     switch (this.mode) {
@@ -68,6 +70,35 @@ Vim.prototype.input = function (str) {
             this.addText('\n');
             --this.cursor;
             this.mode = Mode.INSERT;
+            break;
+          case 'h':
+            --this.cursor;
+            break;
+          case 'l':
+            ++this.cursor;
+            break;
+          case 'j':
+            var initial = this.cursor;
+            var lineOffset = this.lineOffset();
+            var i = this.lineEnd()+1;
+            if (i >= this.buffer.length) break;
+            for (var j = 0; j < lineOffset; ++j) {
+              if (this.buffer.charAt(i+1) != '\n')
+                ++i;
+            }
+            this.cursor = i;
+            break;
+          case 'k':
+            var initial = this.cursor;
+            var lineOffset = this.lineOffset();
+            var i = this.lineStart();
+            if (i == 0) break;
+            i = this.lineStart(i-1);
+            for (var j = 0; j < lineOffset; ++j) {
+              if (this.buffer.charAt(i+1) != '\n')
+                ++i;
+            }
+            this.cursor = i;
             break;
         }
         break;
