@@ -235,6 +235,9 @@ Vim.prototype.input = function (str) {
             this.moveLines(-1);
             this.cursor = this.lineBegin() + lineOffset;
             break;
+          case 'x':
+            this.changeText(this.cursor, this.cursor+1, '');
+            break;
           default:
             var motion = this.getMotion(c, nextc);
             if (motion) {
