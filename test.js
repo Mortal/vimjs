@@ -63,5 +63,6 @@ window.onload = function () {
   // p
   t('ia\x1bxp', 'a\n');
   t('iab\x1bxp', 'ab\n');
+  t('iaa\nbb\x1bdd0p', 'aa\nbb\n');
 };
 // vim:set sw=2 sts=2 et:
