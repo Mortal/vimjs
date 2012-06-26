@@ -74,5 +74,7 @@ window.onload = function () {
   t('iaaa\nbbb\x1bddu', 'aaa\nbbb\n');
   // a
   t('ia\x1bab', 'ab\n');
+  // space
+  t('iab\ncd\x1bk ie', 'ab\necd\n');
 };
 // vim:set sw=2 sts=2 et:
