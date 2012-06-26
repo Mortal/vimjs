@@ -37,6 +37,8 @@ window.onload = function () {
   // h, l
   t('iabc\x1bhid', 'adbc\n');
   t('iabc\x1b0lid', 'adbc\n');
+  t('iab\x1b0llic', 'acb\n');
+  t('ia\nbc\x1b0hid', 'a\ndbc\n');
   // j, k
   t('iabc\ndef\x1bkig', 'abgc\ndef\n');
   t('iabc\x1bOdef\x1bjig', 'def\nabgc\n');
@@ -48,6 +50,9 @@ window.onload = function () {
   t('iaaa\nbbb\nccc\x1bkkdd', 'bbb\nccc\n');
   t('iaaa\nbbb\x1bdd', 'aaa\n');
   t('oa\x1bddia', 'a\n');
+  // dh, dl
+  t('iab\x1bdh', 'b\n');
+  t('iab\x1bdl', 'a\n');
   // cc
   t('iabc\x1bccdef', 'def\n');
   // cw, dw
