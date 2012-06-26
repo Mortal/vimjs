@@ -9,6 +9,7 @@ function Vim() {
   this.operatorpending = null;
 }
 Vim.prototype.changeText = function (i, j, s) {
+  if (j > this.buffer.length-1) j = this.buffer.length-1; // don't eat the last endline
   if (i < this.cursor) {
     this.cursor -= Math.min(j-i, this.cursor-i);
   }
@@ -211,7 +212,10 @@ Vim.prototype.input = function (str) {
             var i, j;
             if (m == c) {
               i = this.lineBegin();
-              j = this.lineEnd();
+              if (c == 'c')
+                j = this.lineEnd();
+              else
+                j = this.lineEnd()+1;
             } else {
               var motion = this.getMotion(m, nextc);
               var movement = this.parseMotion(motion);
