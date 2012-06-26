@@ -46,6 +46,7 @@ window.onload = function () {
   t('iabc\x1bddidef', 'def\n');
   t('iaaa\nbbb\x1bkdd', 'bbb\n');
   t('iaaa\nbbb\nccc\x1bkkdd', 'bbb\nccc\n');
+  t('iaaa\nbbb\x1bdd', 'aaa\n');
   // cc
   t('iabc\x1bccdef', 'def\n');
   // cw, dw
