@@ -48,7 +48,18 @@ Vim.prototype.moveLines = function (lines) {
   while (lines < 0) {
     if (!this.cursor)
       break;
-    if (this.buffer.charAt(--this.cursor) == '\n') --lines;
+    if (this.buffer.charAt(this.cursor--) == '\n') ++lines;
+  }
+};
+Vim.prototype.setLineOffset = function (offs) {
+  this.cursor = this.lineBegin();
+  if (this.buffer[this.cursor] == '\n') return;
+  for (var i = 0; i < offs; ++i) {
+    ++this.cursor;
+    if (this.buffer[this.cursor] == '\n') {
+      --this.cursor;
+      return;
+    }
   }
 };
 Vim.prototype.addText = function (c) {
@@ -228,12 +239,12 @@ Vim.prototype.input = function (str) {
           case 'j':
             var lineOffset = this.lineOffset();
             this.moveLines(1);
-            this.cursor = this.lineBegin() + lineOffset;
+            this.setLineOffset(lineOffset);
             break;
           case 'k':
             var lineOffset = this.lineOffset();
             this.moveLines(-1);
-            this.cursor = this.lineBegin() + lineOffset;
+            this.setLineOffset(lineOffset);
             break;
           case 'x':
             this.changeText(this.cursor, this.cursor+1, '');

@@ -39,5 +39,6 @@ window.onload = function () {
   t('iabc def\x1b0cwhej\x1b', 'hej def\n');
   t('iabc def\x1b0dwihej\x1b', 'hejdef\n');
   t('iabc\x1bx', 'ab\n');
+  t('iaa\naaa\x1bkib', 'aba\naaa\n');
 };
 // vim:set sw=2 sts=2 et:
