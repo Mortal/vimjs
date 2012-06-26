@@ -33,6 +33,10 @@ function Vim() {
   this.cursor = 0;
   this.operatorpending = null;
   this.registers = new Registers();
+
+  this.changeList = [''];
+  this.changeListLength = 1;
+  this.changeListPosition = 0;
 }
 Vim.prototype.changeText = function (i, j, s, opt) {
   if (j == this.buffer.length
@@ -46,7 +50,17 @@ Vim.prototype.changeText = function (i, j, s, opt) {
   var removed = this.buffer.substring(i, j);
   if (!(opt || {}).noyank) this.registers.set(removed);
   this.buffer = this.buffer.substring(0, i) + s + this.buffer.substring(j, this.buffer.length);
+  this.changeList[++this.changeListPosition] = [this.cursor, this.buffer];
+  this.changeListLength = this.changeListPosition+1;
   return removed;
+};
+Vim.prototype.changeListJump = function (offset) {
+  var index = this.changeListPosition + offset;
+  if (index >= this.changeListLength) index = this.changeListLength-1;
+  if (index < 0) index = 0;
+  this.cursor = this.changeList[index][0];
+  this.buffer = this.changeList[index][1];
+  this.changeListPosition = index;
 };
 // Given an absolute cursor position, find the cursor position of the first
 // character in the same line.
@@ -298,6 +312,10 @@ Vim.prototype.input = function (str) {
               this.addText(this.registers.get());
               --this.cursor;
             }
+            break;
+          case 'u':
+            this.changeListJump(-1);
+            break;
           default:
             var motion = this.getMotion(c, nextc);
             if (motion) {
