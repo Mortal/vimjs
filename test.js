@@ -59,5 +59,8 @@ window.onload = function () {
   t('iaaa\x1b0Sbbb', 'bbb\n');
   // C
   t('iaaa\x1b0lCbb', 'abb\n');
+  // p
+  t('ia\x1bxp', 'a\n');
+  t('iab\x1bxp', 'ab\n');
 };
 // vim:set sw=2 sts=2 et:
