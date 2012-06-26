@@ -50,6 +50,8 @@ Vim.prototype.changeText = function (i, j, s, opt) {
   var removed = this.buffer.substring(i, j);
   if (!(opt || {}).noyank) this.registers.set(removed);
   this.buffer = this.buffer.substring(0, i) + s + this.buffer.substring(j, this.buffer.length);
+  if (this.cursor > 0 && this.cursor > this.buffer.length-1)
+    this.cursor = this.buffer.length-2;
   this.changeList[++this.changeListPosition] = [this.cursor, this.buffer];
   this.changeListLength = this.changeListPosition+1;
   return removed;
