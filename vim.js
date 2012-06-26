@@ -2,18 +2,47 @@ function Mode() {
 }
 Mode.NORMAL = new Mode();
 Mode.INSERT = new Mode();
+function Registers() {
+  this.contents = {};
+  this.nextreg = '"';
+}
+Registers.prototype.setnext = function (name) {
+  this.nextreg = name;
+};
+Registers.prototype.getnamed = function (name) {
+  return this.contents[name];
+};
+Registers.prototype.setnamed = function (str, name) {
+  this.contents[name] = str;
+};
+Registers.prototype.setnext = function (name) {
+  this.nextreg = name;
+};
+Registers.prototype.get = function () {
+  var v = this.getnamed(this.nextreg);
+  this.nextreg = '"';
+  return v;
+};
+Registers.prototype.set = function (str) {
+  this.setnamed(str, this.nextreg);
+  this.nextreg = '"';
+};
 function Vim() {
   this.mode = Mode.NORMAL;
   this.buffer = '\n';
   this.cursor = 0;
   this.operatorpending = null;
+  this.registers = new Registers();
 }
-Vim.prototype.changeText = function (i, j, s) {
+Vim.prototype.changeText = function (i, j, s, noyank) {
   if (j > this.buffer.length-1) j = this.buffer.length-1; // don't eat the last endline
   if (i < this.cursor) {
     this.cursor -= Math.min(j-i, this.cursor-i);
   }
+  var removed = this.buffer.substring(i, j);
+  if (!noyank) this.registers.set(removed);
   this.buffer = this.buffer.substring(0, i) + s + this.buffer.substring(j, this.buffer.length);
+  return removed;
 };
 // Given an absolute cursor position, find the cursor position of the first
 // character in the same line.
@@ -64,7 +93,7 @@ Vim.prototype.setLineOffset = function (offs) {
   }
 };
 Vim.prototype.addText = function (c) {
-  this.changeText(this.cursor, this.cursor, c);
+  this.changeText(this.cursor, this.cursor, c, true);
   this.cursor += c.length;
 };
 Vim.prototype.getMotion = function (c, nextc) {
@@ -257,6 +286,14 @@ Vim.prototype.input = function (str) {
           case 'x':
             this.changeText(this.cursor, this.cursor+1, '');
             break;
+          case 'p':
+            if (this.buffer[this.cursor] == '\n') {
+              this.addText(this.registers.get());
+            } else {
+              ++this.cursor;
+              this.addText(this.registers.get());
+              --this.cursor;
+            }
           default:
             var motion = this.getMotion(c, nextc);
             if (motion) {
