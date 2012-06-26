@@ -196,6 +196,8 @@ Vim.prototype.input = function (str) {
           case 'i':
           case 'A':
           case 'S':
+            if (c == 'S') this.changeText(this.lineBegin(), this.lineEnd(), '');
+            if (c == 'A') this.cursor = this.lineEnd();
             this.mode = Mode.INSERT;
             break;
           case 'D':
