@@ -158,9 +158,13 @@ Vim.prototype.parseMotion = function (motion) {
   }
   switch (motion) {
     case 'l':
-      if (this.buffer[this.cursor] == '\n' || this.buffer[this.cursor+1] == '\n')
-        return exclusive_motion(this.cursor, this.cursor+1, this.cursor, this.cursor);
-      else
+    case ' ':
+      if (this.buffer[this.cursor] == '\n' || this.buffer[this.cursor+1] == '\n') {
+        var dest = this.cursor;
+        if (motion == ' ' && this.cursor+2 < this.buffer.length)
+          dest = this.cursor+2;
+        return exclusive_motion(this.cursor, this.cursor+1, this.cursor, dest);
+      } else
         return exclusive_motion(this.cursor, this.cursor+1);
 
     case 'h':
