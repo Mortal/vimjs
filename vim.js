@@ -6,6 +6,7 @@ function Vim() {
   this.mode = Mode.NORMAL;
   this.buffer = '\n';
   this.cursor = 0;
+  this.operatorpending = null;
 }
 Vim.prototype.changeText = function (i, j, s) {
   if (i < this.cursor) {
@@ -82,14 +83,14 @@ Vim.prototype.isKeyword = function (c) {
   return 2;
 };
 Vim.prototype.parseMotion = function (motion) {
-  function exclusive_motion(from, to) {
-    return {from: from, to: to, lastIncluded: to-1, dest: to};
+  function exclusive_motion(from, to, last) {
+    return {from: from, to: to, lastIncluded: last || to-1, dest: to};
   }
   function inclusive_motion(from, to) {
     return {from: from, to: to, lastIncluded: to, dest: to};
   }
-  function backwards_exclusive_motion(from, to) {
-    return {from: from, to: to, lastIncluded: to-1, dest: from};
+  function backwards_exclusive_motion(from, to, last) {
+    return {from: from, to: to, lastIncluded: last || to-1, dest: from};
   }
   function backwards_inclusive_motion(from, to) {
     return {from: from, to: to, lastIncluded: to, dest: from};
@@ -112,11 +113,14 @@ Vim.prototype.parseMotion = function (motion) {
       var end = (motion == 'e' || motion == 'E');
       var i = this.cursor;
       var j = i;
+      var end_of_word;
       // isKeyword returns either
       // 0: space
       // 1: alnum word
       // 2: non-alnum word
       var state = this.isKeyword(this.buffer.charAt(i));
+      // we also have the state
+      // 3: skipping initial space on e or E
 
       // if WORD, collapse state 1 and 2
       if (WORD && state == 2) state = 1;
@@ -139,21 +143,23 @@ Vim.prototype.parseMotion = function (motion) {
           case 0:
             // final space
             if (isk)
-              return exclusive_motion(i, j);
+              return exclusive_motion(i, j, end_of_word);
             break;
           default: // 1: alnum-word, 2: non-alnum-word
+            end_of_word = j-1;
             if (end && isk != state) {
-              return inclusive_motion(i, j-1);
+              return inclusive_motion(i, end_of_word);
             }
             if (!isk) {
               state = 0;
             } else if (isk != state) {
-              return exclusive_motion(i, j);
+              return exclusive_motion(i, j, end_of_word);
             }
             break;
         }
         ++j;
       }
+      // if we break out, we're at the end of the buffer
       return exclusive_motion(i, j);
     case '0':
       var j = this.cursor;
@@ -170,7 +176,8 @@ Vim.prototype.input = function (str) {
         return str.charAt(inputOffset++);
       return '';
     }
-    var c = nextc();
+    var c = this.operatorpending || nextc();
+    this.operatorpending = null;
     switch (this.mode) {
       case Mode.NORMAL:
         switch (c) {
@@ -184,18 +191,28 @@ Vim.prototype.input = function (str) {
             this.changeText(this.cursor, this.lineEnd(), '');
             break;
           case 'd':
+          case 'c':
             var m = nextc();
+            if (!m) {
+              this.operatorpending = c;
+              break;
+            }
             var i, j;
-            if (m == 'd') {
+            if (m == c) {
               i = this.lineBegin();
               j = this.lineEnd();
             } else {
               var motion = this.getMotion(m, nextc);
               var movement = this.parseMotion(motion);
               i = movement.from;
-              j = movement.lastIncluded;
+              if (c == 'c')
+                j = movement.lastIncluded+1;
+              else
+                j = movement.to;
             }
             this.changeText(i, j, '');
+            if (c == 'c')
+              this.mode = Mode.INSERT;
             break;
           case 'o':
             this.cursor = this.lineEnd();
