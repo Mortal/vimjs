@@ -248,6 +248,9 @@ Vim.prototype.input = function (str) {
           case 'A':
             this.cursor = this.lineEnd();
             // fallthru
+          case 'a':
+            if (this.buffer[this.cursor] != '\n') ++this.cursor;
+            // fallthru
           case 'i':
             this.mode = Mode.INSERT;
             break;
