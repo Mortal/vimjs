@@ -195,12 +195,14 @@ Vim.prototype.input = function (str) {
         switch (c) {
           case 'i':
           case 'A':
-          case 'C':
           case 'S':
             this.mode = Mode.INSERT;
             break;
           case 'D':
+          case 'C':
             this.changeText(this.cursor, this.lineEnd(), '');
+            if (c == 'C') this.mode = Mode.INSERT;
+            this.cursor = this.lineEnd();
             break;
           case 'd':
           case 'c':
