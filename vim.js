@@ -34,13 +34,17 @@ function Vim() {
   this.operatorpending = null;
   this.registers = new Registers();
 }
-Vim.prototype.changeText = function (i, j, s, noyank) {
-  if (j > this.buffer.length-1) j = this.buffer.length-1; // don't eat the last endline
+Vim.prototype.changeText = function (i, j, s, opt) {
+  if (j == this.buffer.length
+      && (s.length == 0 || s.charAt(s.length-1) != '\n')
+      && (i == 0 || this.buffer.charAt(i-1) != '\n')) {
+    s += '\n'; // don't eat the last endline
+  }
   if (i < this.cursor) {
     this.cursor -= Math.min(j-i, this.cursor-i);
   }
   var removed = this.buffer.substring(i, j);
-  if (!noyank) this.registers.set(removed);
+  if (!(opt || {}).noyank) this.registers.set(removed);
   this.buffer = this.buffer.substring(0, i) + s + this.buffer.substring(j, this.buffer.length);
   return removed;
 };
