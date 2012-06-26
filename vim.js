@@ -144,8 +144,8 @@ Vim.prototype.isKeyword = function (c) {
   return 2;
 };
 Vim.prototype.parseMotion = function (motion) {
-  function exclusive_motion(from, to, last) {
-    return {from: from, to: to, lastIncluded: last || to-1, dest: to};
+  function exclusive_motion(from, to, last, dest) {
+    return {from: from, to: to, lastIncluded: last || to-1, dest: dest || to};
   }
   function inclusive_motion(from, to) {
     return {from: from, to: to, lastIncluded: to, dest: to};
@@ -158,7 +158,10 @@ Vim.prototype.parseMotion = function (motion) {
   }
   switch (motion) {
     case 'l':
-      return exclusive_motion(this.cursor, this.cursor+1);
+      if (this.buffer[this.cursor] == '\n' || this.buffer[this.cursor+1] == '\n')
+        return exclusive_motion(this.cursor, this.cursor+1, this.cursor, this.cursor);
+      else
+        return exclusive_motion(this.cursor, this.cursor+1);
 
     case 'h':
       if (this.cursor && this.buffer.charAt(this.cursor-1) == '\n')
