@@ -100,5 +100,7 @@ window.onload = function () {
   t('ia\x1bab', 'ab\n');
   // space
   t('iab\ncd\x1bk ie', 'ab\necd\n');
+  // y
+  t('ia\x1bylp', 'aa\n');
 };
 // vim:set sw=2 sts=2 et:

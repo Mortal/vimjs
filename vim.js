@@ -282,6 +282,7 @@ Vim.prototype.input = function (str) {
             break;
           case 'd':
           case 'c':
+          case 'y':
             var m = nextc();
             if (!m) {
               this.operatorpending = c;
@@ -302,9 +303,14 @@ Vim.prototype.input = function (str) {
               else
                 j = movement.to;
             }
+            var curs = this.cursor;
             this.changeText(i, j, (linewise && c == 'c') ? '\n' : '', {linewise: linewise});
             if (c == 'c')
               this.mode = Mode.INSERT;
+            else if (c == 'y') {
+              this.input('P');
+              this.cursor = curs;
+            }
             break;
           case 'o':
             this.cursor = this.lineEnd();
