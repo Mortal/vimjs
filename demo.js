@@ -12,8 +12,13 @@ function update() {
 document.addEventListener('keydown', function (ev) {
   var kc = ev.keyCode;
   if (kc != 27 && kc != 13 && kc < 32) return;
-  var k = (kc == 13) ? '\n' : String.fromCharCode(kc);
+  var k;
+  if (kc == 13) k = '\n';
+  else if (kc == 190) k = '.';
+  else if (kc == 188) k = ',';
+  else k = String.fromCharCode(kc);
   if (!ev.shiftKey) k = k.toLowerCase();
+  console.log(kc,k,ev);
   try {
     vim.input(k);
   } catch (e) {
