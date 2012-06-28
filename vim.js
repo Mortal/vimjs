@@ -1,3 +1,8 @@
+var loopcount = 0;
+function g() {
+  if (++loopcount > 1000000) throw 'break';
+  return true;
+}
 function Mode() {
 }
 function Linewise(s) { this.s = s; }
@@ -72,7 +77,7 @@ Vim.prototype.changeListJump = function (offset) {
 Vim.prototype.lineBegin = function (cursorPos) {
   if ('undefined' == typeof cursorPos)
     cursorPos = this.cursor;
-  while (cursorPos && this.buffer.charAt(cursorPos-1) != '\n')
+  while (g() && cursorPos && this.buffer.charAt(cursorPos-1) != '\n')
     --cursorPos;
   return cursorPos;
 };
@@ -81,7 +86,7 @@ Vim.prototype.lineBegin = function (cursorPos) {
 Vim.prototype.lineEnd = function (cursorPos) {
   if ('undefined' == typeof cursorPos)
     cursorPos = this.cursor;
-  while (cursorPos < this.buffer.length && this.buffer.charAt(cursorPos) != '\n')
+  while (g() && cursorPos < this.buffer.length && this.buffer.charAt(cursorPos) != '\n')
     ++cursorPos;
   return cursorPos;
 };
@@ -93,12 +98,12 @@ Vim.prototype.lineOffset = function (cursorPos) {
   return cursorPos-this.lineBegin();
 };
 Vim.prototype.moveLines = function (lines) {
-  while (lines > 0) {
+  while (g() && lines > 0) {
     if (this.cursor > this.buffer.length)
       break;
     if (this.buffer.charAt(this.cursor++) == '\n') --lines;
   }
-  while (lines < 0) {
+  while (g() && lines < 0) {
     if (!this.cursor)
       break;
     if (this.buffer.charAt(this.cursor--) == '\n') ++lines;
@@ -109,7 +114,7 @@ Vim.prototype.moveLines = function (lines) {
 Vim.prototype.setLineOffset = function (offs) {
   this.cursor = this.lineBegin();
   if (this.buffer[this.cursor] == '\n') return;
-  for (var i = 0; i < offs; ++i) {
+  for (var i = 0; g() && i < offs; ++i) {
     ++this.cursor;
     if (this.buffer[this.cursor] == '\n') {
       --this.cursor;
@@ -201,7 +206,7 @@ Vim.prototype.parseMotion = function (motion) {
       // if e or E and we start on a space, handle with care
       if (end && !state) state = 3;
 
-      while (j < this.buffer.length) {
+      while (g() && j < this.buffer.length) {
         var c = this.buffer.charAt(j);
         if (c == '\n')
           break;
@@ -243,7 +248,7 @@ Vim.prototype.parseMotion = function (motion) {
   }
 };
 Vim.prototype.input = function (str) {
-  for (var inputOffset = 0, l = str.length; inputOffset < l;) {
+  for (var inputOffset = 0, l = str.length; g() && inputOffset < l;) {
     function nextc() {
       if (inputOffset < str.length)
         return str.charAt(inputOffset++);
