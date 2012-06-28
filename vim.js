@@ -60,7 +60,7 @@ Vim.prototype.changeText = function (i, j, s, opt) {
   if (!opt.noyank) this.registers.set(opt.linewise ? new Linewise(removed) : removed);
   this.buffer = this.buffer.substring(0, i) + s + this.buffer.substring(j, this.buffer.length);
   if (this.cursor > 0 && this.cursor > this.buffer.length-1)
-    this.cursor = this.buffer.length-2;
+    this.cursor = this.buffer.length-1;
   this.changeList[++this.changeListPosition] = [this.cursor, this.buffer];
   this.changeListLength = this.changeListPosition+1;
   return removed;
@@ -330,10 +330,11 @@ Vim.prototype.input = function (str) {
           case 'x':
             this.changeText(this.cursor, this.cursor+1, '');
             break;
+          case 'P':
           case 'p':
             var reg = this.registers.get();
             if (reg instanceof Linewise) {
-              this.cursor = this.lineEnd()+1;
+              this.cursor = (c == 'P') ? this.lineBegin() : this.lineEnd()+1;
               var pos = this.cursor;
               console.log(pos);
               this.addText(reg.toString());
