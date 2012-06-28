@@ -196,11 +196,16 @@ Vim.prototype.parseMotion = function (motion) {
       var i = this.cursor;
       var j = i;
       var end_of_word;
+      if (end) {
+        ++j;
+        if (j+1 < this.buffer.length && this.buffer.charAt(j) == '\n')
+          ++j;
+      }
       // isKeyword returns either
       // 0: space
       // 1: alnum word
       // 2: non-alnum word
-      var state = this.isKeyword(this.buffer.charAt(i));
+      var state = this.isKeyword(this.buffer.charAt(j));
       // we also have the state
       // 3: skipping initial space on e or E
 
@@ -241,8 +246,11 @@ Vim.prototype.parseMotion = function (motion) {
         }
         ++j;
       }
-      // if we break out, we're at the end of the buffer
-      return exclusive_motion(i, j);
+      // if we break out, we're at the end of the line
+      if (end)
+        return inclusive_motion(i, j-1);
+      else
+        return exclusive_motion(i, j);
     case '0':
       var j = this.cursor;
       var i = this.lineBegin();
