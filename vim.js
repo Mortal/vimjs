@@ -360,7 +360,6 @@ Vim.prototype.input = function (str) {
             if (reg instanceof Linewise) {
               this.cursor = (c == 'P') ? this.lineBegin() : this.lineEnd()+1;
               var pos = this.cursor;
-              console.log(pos);
               this.addText(reg.toString());
               this.cursor = pos;
               break;
