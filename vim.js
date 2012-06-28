@@ -347,7 +347,7 @@ Vim.prototype.input = function (str) {
               this.cursor = pos;
               break;
             }
-            if (this.buffer[this.cursor] != '\n') {
+            if (c != 'P' && this.buffer[this.cursor] != '\n') {
               ++this.cursor;
             }
             this.addText(reg);

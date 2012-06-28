@@ -94,6 +94,7 @@ window.onload = function () {
   t('ia\x1bxpp', 'aa\n');
   // P
   t('oa\x1bddP', 'a\n\n');
+  t('iab\x1b0dlP', 'ab\n');
   // u
   t('iaaa\nbbb\x1bddu', 'aaa\nbbb\n');
   // a
