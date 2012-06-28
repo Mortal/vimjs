@@ -41,6 +41,7 @@ function Vim() {
   this.cursor = 0;
   this.operatorpending = null;
   this.registers = new Registers();
+  this.lastChange = ''; // used by dot
 
   this.changeList = [''];
   this.changeListLength = 1;
@@ -273,12 +274,14 @@ Vim.prototype.input = function (str) {
             // fallthru
           case 'i':
             this.mode = Mode.INSERT;
+            this.lastChange = c;
             break;
           case 'D':
           case 'C':
             this.changeText(this.cursor, this.lineEnd(), '');
             if (c == 'C') this.mode = Mode.INSERT;
             this.cursor = this.lineEnd();
+            this.lastChange = c;
             break;
           case 'd':
           case 'c':
@@ -313,17 +316,21 @@ Vim.prototype.input = function (str) {
             } else if (this.buffer.charAt(this.cursor) == '\n' && (this.cursor > 0 && this.buffer.charAt(this.cursor-1) != '\n')) {
               --this.cursor;
             }
+            if (c != 'y')
+              this.lastChange = c+m;
             break;
           case 'o':
             this.cursor = this.lineEnd();
             this.addText('\n');
             this.mode = Mode.INSERT;
+            this.lastChange = c;
             break;
           case 'O':
             this.cursor = this.lineBegin();
             this.addText('\n');
             --this.cursor;
             this.mode = Mode.INSERT;
+            this.lastChange = c;
             break;
           case 'j':
             var lineOffset = this.lineOffset();
@@ -337,6 +344,7 @@ Vim.prototype.input = function (str) {
             break;
           case 'x':
             this.changeText(this.cursor, this.cursor+1, '');
+            this.lastChange = c;
             break;
           case 'P':
           case 'p':
@@ -354,9 +362,13 @@ Vim.prototype.input = function (str) {
             }
             this.addText(reg);
             --this.cursor;
+            this.lastChange = c;
             break;
           case 'u':
             this.changeListJump(-1);
+            break;
+          case '.':
+            this.input(this.lastChange);
             break;
           default:
             var motion = this.getMotion(c, nextc);

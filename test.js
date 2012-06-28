@@ -104,5 +104,7 @@ window.onload = function () {
   t('iab\ncd\x1bk ie', 'ab\necd\n');
   // y
   t('ia\x1bylp', 'aa\n');
+  // repeat last change
+  t('iabc\x1bx.', 'a\n');
 };
 // vim:set sw=2 sts=2 et:
