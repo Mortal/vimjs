@@ -331,13 +331,16 @@ Vim.prototype.input = function (str) {
             var reg = this.registers.get();
             if (reg instanceof Linewise) {
               this.cursor = this.lineEnd()+1;
+              var pos = this.cursor;
+              console.log(pos);
               this.addText(reg.toString());
-            } else {
-              if (this.buffer[this.cursor] != '\n') {
-                ++this.cursor;
-              }
-              this.addText(reg);
+              this.cursor = pos;
+              break;
             }
+            if (this.buffer[this.cursor] != '\n') {
+              ++this.cursor;
+            }
+            this.addText(reg);
             --this.cursor;
             break;
           case 'u':
