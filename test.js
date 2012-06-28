@@ -12,8 +12,16 @@ function t(type, expect) {
   res.appendChild(line);
   setCounter(++tests);
   var v = new Vim();
-  v.input(type);
-  var buf = v.getBuffer();
+  var buf = 'Couldn\'t get buffer';
+  try {
+    v.input(type);
+    buf = v.getBuffer();
+  } catch (e) {
+    if (e instanceof InfiniteLoop) {
+    } else {
+      throw e;
+    }
+  }
   if (buf == expect) {
     line.className += ' good';
   } else {

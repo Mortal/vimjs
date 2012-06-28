@@ -1,6 +1,7 @@
 var loopcount = 0;
+function InfiniteLoop() {}
 function g() {
-  if (++loopcount > 1000000) throw 'break';
+  if (++loopcount > 10000) throw new InfiniteLoop();
   return true;
 }
 function Mode() {

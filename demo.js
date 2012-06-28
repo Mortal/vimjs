@@ -14,7 +14,15 @@ document.addEventListener('keydown', function (ev) {
   if (kc != 27 && kc != 13 && kc < 32) return;
   var k = (kc == 13) ? '\n' : String.fromCharCode(kc);
   if (!ev.shiftKey) k = k.toLowerCase();
-  vim.input(k);
+  try {
+    vim.input(k);
+  } catch (e) {
+    if (e instanceof InfiniteLoop) {
+      document.body.innerHTML = '<p>Infinite loop</p><div id=vim></div>';
+    } else {
+      throw e;
+    }
+  }
   update();
 }, false);
 // vim:set sw=2 sts=2 et:
