@@ -1,5 +1,7 @@
 function Mode() {
 }
+function Linewise(s) { this.s = s; }
+Linewise.prototype.toString = function () { return this.s; };
 Mode.NORMAL = new Mode();
 Mode.INSERT = new Mode();
 function Registers() {
@@ -39,6 +41,7 @@ function Vim() {
   this.changeListPosition = 0;
 }
 Vim.prototype.changeText = function (i, j, s, opt) {
+  if (!opt) opt = {};
   if (j == this.buffer.length
       && (s.length == 0 || s.charAt(s.length-1) != '\n')
       && (i == 0 || this.buffer.charAt(i-1) != '\n')) {
@@ -48,7 +51,7 @@ Vim.prototype.changeText = function (i, j, s, opt) {
     this.cursor -= Math.min(j-i, this.cursor-i);
   }
   var removed = this.buffer.substring(i, j);
-  if (!(opt || {}).noyank) this.registers.set(removed);
+  if (!opt.noyank) this.registers.set(opt.linewise ? new Linewise(removed) : removed);
   this.buffer = this.buffer.substring(0, i) + s + this.buffer.substring(j, this.buffer.length);
   if (this.cursor > 0 && this.cursor > this.buffer.length-1)
     this.cursor = this.buffer.length-2;
@@ -145,16 +148,16 @@ Vim.prototype.isKeyword = function (c) {
 };
 Vim.prototype.parseMotion = function (motion) {
   function exclusive_motion(from, to, last, dest) {
-    return {from: from, to: to, lastIncluded: last || to-1, dest: dest || to};
+    return {from: from, to: to, lastIncluded: last || to-1, dest: dest || to, linewise: false};
   }
   function inclusive_motion(from, to) {
-    return {from: from, to: to, lastIncluded: to, dest: to};
+    return {from: from, to: to, lastIncluded: to, dest: to, linewise: false};
   }
   function backwards_exclusive_motion(from, to, last) {
-    return {from: from, to: to, lastIncluded: last || to-1, dest: from};
+    return {from: from, to: to, lastIncluded: last || to-1, dest: from, linewise: false};
   }
   function backwards_inclusive_motion(from, to) {
-    return {from: from, to: to, lastIncluded: to, dest: from};
+    return {from: from, to: to, lastIncluded: to, dest: from, linewise: false};
   }
   switch (motion) {
     case 'l':
@@ -274,23 +277,22 @@ Vim.prototype.input = function (str) {
               this.operatorpending = c;
               break;
             }
-            var i, j;
+            var i, j, linewise = false;
             if (m == c) {
+              linewise = true;
               i = this.lineBegin();
-              if (c == 'c')
-                j = this.lineEnd();
-              else
-                j = this.lineEnd()+1;
+              j = this.lineEnd()+1;
             } else {
               var motion = this.getMotion(m, nextc);
               var movement = this.parseMotion(motion);
               i = movement.from;
+              linewise = movement.linewise;
               if (c == 'c')
                 j = movement.lastIncluded+1;
               else
                 j = movement.to;
             }
-            this.changeText(i, j, '');
+            this.changeText(i, j, (linewise && c == 'c') ? '\n' : '', {linewise: linewise});
             if (c == 'c')
               this.mode = Mode.INSERT;
             break;
@@ -319,13 +321,17 @@ Vim.prototype.input = function (str) {
             this.changeText(this.cursor, this.cursor+1, '');
             break;
           case 'p':
-            if (this.buffer[this.cursor] == '\n') {
-              this.addText(this.registers.get());
+            var reg = this.registers.get();
+            if (reg instanceof Linewise) {
+              this.cursor = this.lineEnd()+1;
+              this.addText(reg.toString());
             } else {
-              ++this.cursor;
-              this.addText(this.registers.get());
-              --this.cursor;
+              if (this.buffer[this.cursor] != '\n') {
+                ++this.cursor;
+              }
+              this.addText(reg);
             }
+            --this.cursor;
             break;
           case 'u':
             this.changeListJump(-1);
