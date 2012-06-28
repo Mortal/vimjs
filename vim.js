@@ -310,6 +310,8 @@ Vim.prototype.input = function (str) {
             else if (c == 'y') {
               this.input('P');
               this.cursor = curs;
+            } else if (this.buffer.charAt(this.cursor) == '\n' && (this.cursor > 0 && this.buffer.charAt(this.cursor-1) != '\n')) {
+              --this.cursor;
             }
             break;
           case 'o':

@@ -71,6 +71,7 @@ window.onload = function () {
   t('iaaa\nbbb\x1bdd', 'aaa\n');
   t('oa\x1bddia', 'a\n');
   t('ia\x1bddpib', '\nba\n');
+  t('ia\nb\x1bddib', 'ba\n');
   // dh, dl
   t('iab\x1bdh', 'b\n');
   t('iab\x1bdl', 'a\n');
