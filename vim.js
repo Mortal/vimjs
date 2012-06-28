@@ -126,7 +126,7 @@ Vim.prototype.setLineOffset = function (offs) {
   }
 };
 Vim.prototype.addText = function (c) {
-  this.changeText(this.cursor, this.cursor, c, true);
+  this.changeText(this.cursor, this.cursor, c, {noyank: true});
   this.cursor += c.length;
 };
 Vim.prototype.getMotion = function (c, nextc) {
