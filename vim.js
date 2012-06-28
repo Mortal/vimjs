@@ -173,7 +173,7 @@ Vim.prototype.parseMotion = function (motion) {
         return exclusive_motion(this.cursor, this.cursor+1);
 
     case 'h':
-      if (this.cursor && this.buffer.charAt(this.cursor-1) == '\n')
+      if (!this.cursor || this.buffer.charAt(this.cursor-1) == '\n')
         return backwards_exclusive_motion(this.cursor, this.cursor);
       else
         return backwards_exclusive_motion(this.cursor-1, this.cursor);

@@ -49,6 +49,7 @@ window.onload = function () {
   t('iabc\x1b0lid', 'adbc\n');
   t('iab\x1b0llic', 'acb\n');
   t('ia\nbc\x1b0hid', 'a\ndbc\n');
+  t('ia\x1bhab', 'ab\n');
   // j, k
   t('iabc\ndef\x1bkig', 'abgc\ndef\n');
   t('iabc\x1bOdef\x1bjig', 'def\nabgc\n');
