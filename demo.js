@@ -1,13 +1,15 @@
-var vimdiv, vim;
+var vimdiv, errordiv, statuslinediv, vim;
 window.onload = function () {
   vimdiv = document.getElementById('vim');
   vim = new Vim();
+  statuslinediv = document.getElementById('statusline');
 };
 function update() {
   var buf = vim.getBuffer();
   var cur = vim.cursor;
   buf = buf.substring(0, cur)+'|'+buf.substring(cur, buf.length);
   vimdiv.textContent = buf;
+  statuslinediv.textContent = vim.getStatusline();
 }
 document.addEventListener('keydown', function (ev) {
   var kc = ev.keyCode;
@@ -23,7 +25,11 @@ document.addEventListener('keydown', function (ev) {
     vim.input(k);
   } catch (e) {
     if (e instanceof InfiniteLoop) {
-      document.body.innerHTML = '<p>Infinite loop</p><div id=vim></div>';
+      if (!errordiv) {
+        errordiv = document.body.insertBefore(document.createElement('div'), document.body.firstChild);
+        errordiv.id = 'error';
+      }
+      errordiv.innerHTML = 'Infinite loop';
     } else {
       throw e;
     }

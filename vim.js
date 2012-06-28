@@ -404,4 +404,8 @@ Vim.prototype.input = function (str) {
 Vim.prototype.getBuffer = function () {
   return this.buffer;
 };
+Vim.prototype.getStatusline = function () {
+  if (this.mode == Mode.INSERT) return '-- INSERT --';
+  else return '';
+};
 // vim:set sw=2 sts=2 et:
