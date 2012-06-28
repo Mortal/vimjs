@@ -162,7 +162,7 @@ Vim.prototype.parseMotion = function (motion) {
     return {from: from, to: to, lastIncluded: last || to-1, dest: dest || to, linewise: false};
   }
   function inclusive_motion(from, to) {
-    return {from: from, to: to, lastIncluded: to, dest: to, linewise: false};
+    return {from: from, to: to, lastIncluded: to, dest: to-1, linewise: false};
   }
   function backwards_exclusive_motion(from, to, last) {
     return {from: from, to: to, lastIncluded: last || to-1, dest: from, linewise: false};
@@ -235,7 +235,7 @@ Vim.prototype.parseMotion = function (motion) {
           default: // 1: alnum-word, 2: non-alnum-word
             end_of_word = j-1;
             if (end && isk != state) {
-              return inclusive_motion(i, end_of_word);
+              return inclusive_motion(i, j);
             }
             if (!isk) {
               state = 0;
@@ -248,7 +248,7 @@ Vim.prototype.parseMotion = function (motion) {
       }
       // if we break out, we're at the end of the line
       if (end)
-        return inclusive_motion(i, j-1);
+        return inclusive_motion(i, j);
       else
         return exclusive_motion(i, j);
     case '0':
