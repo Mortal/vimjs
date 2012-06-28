@@ -78,6 +78,8 @@ Vim.prototype.changeListJump = function (offset) {
 Vim.prototype.lineBegin = function (cursorPos) {
   if ('undefined' == typeof cursorPos)
     cursorPos = this.cursor;
+  if (cursorPos < 0)
+    throw 'bad pos';
   while (g() && cursorPos && this.buffer.charAt(cursorPos-1) != '\n')
     --cursorPos;
   return cursorPos;
