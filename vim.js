@@ -103,6 +103,8 @@ Vim.prototype.moveLines = function (lines) {
       break;
     if (this.buffer.charAt(this.cursor--) == '\n') ++lines;
   }
+  if (this.cursor > 0 && this.cursor >= this.buffer.length-1)
+    this.cursor = this.buffer.length-1;
 };
 Vim.prototype.setLineOffset = function (offs) {
   this.cursor = this.lineBegin();
