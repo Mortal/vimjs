@@ -115,5 +115,7 @@ window.onload = function () {
   t('ia\x1bylp', 'aa\n');
   // repeat last change
   t('iabc\x1bx.', 'a\n');
+  // s
+  t('ia\x1bsb', 'b\n');
 };
 // vim:set sw=2 sts=2 et:

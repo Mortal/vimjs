@@ -300,6 +300,11 @@ Vim.prototype.input = function (str) {
             this.mode = Mode.INSERT;
             this.lastChange = c;
             break;
+          case 's':
+            if (this.buffer.charAt(this.cursor) != '\n')
+              this.changeText(this.cursor, this.cursor+1, '');
+            this.mode = Mode.INSERT;
+            break;
           case 'D':
           case 'C':
             this.changeText(this.cursor, this.lineEnd(), '');
