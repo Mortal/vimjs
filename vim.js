@@ -262,8 +262,10 @@ Vim.prototype.parseMotion = function (motion) {
       // if we break out, we're at the end of the line
       if (end)
         return inclusive_motion(i, j);
+      else if (i == j && j < this.buffer.length-1)
+        return exclusive_motion(i, j+1, j, j+1);
       else
-        return exclusive_motion(i, j);
+        return exclusive_motion(i, j, j-1, j+1);
     case '0':
       var j = this.cursor;
       var i = this.lineBegin();
