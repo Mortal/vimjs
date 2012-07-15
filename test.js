@@ -91,6 +91,8 @@ window.onload = function () {
   // cw, dw
   t('iabc def\x1b0cwhej\x1b', 'hej def\n');
   t('iabc def\x1b0dwihej\x1b', 'hejdef\n');
+  // ce
+  t('iab cd\x1b0ceef', 'ef cd\n');
   // x
   t('iabc\x1bx', 'ab\n');
   // A
@@ -109,6 +111,7 @@ window.onload = function () {
   t('iab\x1b0dlP', 'ab\n');
   // u
   t('iaaa\nbbb\x1bddu', 'aaa\nbbb\n');
+  t('ifoo bar baz\x1b0dwwdwuaa', 'bar a\n');
   // a
   t('ia\x1bab', 'ab\n');
   // space
@@ -119,5 +122,19 @@ window.onload = function () {
   t('iabc\x1bx.', 'a\n');
   // s
   t('ia\x1bsb', 'b\n');
+  // d$
+  t('iabc\x1b0ld$', 'a\n');
+  // counts
+  t('ifoo bar baz\x1b02wicoq', 'foo bar coqbaz\n');
+  t('ifoo bar baz\x1b02eicoq', 'foo bacoqr baz\n');
+  t('ithis ABC DE line\x1b0wd2w', 'this line\n');
+  // r
+  t('ia\x1brb', 'b\n');
+  // %
+  t('i(f(o)o)(baz)\x1b0%ibar', '(f(o)obar)(baz)\n');
+  // f
+  t('iqwesd\x1b0fsia', 'qweasd\n');
+  // ;
+  t('ialaala\x1b0fa;ik', 'alakala\n');
 };
 // vim:set sw=2 sts=2 et:
