@@ -19,7 +19,9 @@ function t(type, expect) {
   } catch (e) {
     if (e instanceof InfiniteLoop) {
     } else {
-      throw e;
+      line.className += ' bad';
+      line.title = 'Expected:\n'+expect+'\nbut got exception:\n'+e;
+      return;
     }
   }
   if (buf == expect) {
