@@ -58,6 +58,8 @@ window.onload = function () {
   t('iab\x1b0llic', 'acb\n');
   t('ia\nbc\x1b0hid', 'a\ndbc\n');
   t('ia\x1bhab', 'ab\n');
+  // w
+  t('ia\nb\x1bkwic', 'a\ncb\n');
   // e
   t('iab\x1b0eic', 'acb\n');
   t('iab cd\x1b0eie', 'aeb cd\n');
