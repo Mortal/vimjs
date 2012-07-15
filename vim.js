@@ -66,6 +66,13 @@ Vim.prototype.changeText = function (i, j, s, opt) {
   this.changeListLength = this.changeListPosition+1;
   return removed;
 };
+
+// If cursor is beyond end-of-line, move to last character on line
+Vim.prototype.cursorFixup = function () {
+  if (this.cursor > 0 && this.buffer.charAt(this.cursor) == '\n' && this.buffer.charAt(this.cursor-1) != '\n')
+    --this.cursor;
+};
+
 Vim.prototype.changeListJump = function (offset) {
   var index = this.changeListPosition + offset;
   if (index >= this.changeListLength) index = this.changeListLength-1;
@@ -352,6 +359,7 @@ Vim.prototype.input = function (str) {
             break;
           case 'x':
             this.changeText(this.cursor, this.cursor+1, '');
+            this.cursorFixup();
             this.lastChange = c;
             break;
           case 'P':
