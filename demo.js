@@ -34,6 +34,7 @@ document.addEventListener('keydown', function (ev) {
       throw e;
     }
   }
+  ev.preventDefault();
   update();
 }, false);
 // vim:set sw=2 sts=2 et:
