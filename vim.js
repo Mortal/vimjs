@@ -166,13 +166,19 @@ Vim.prototype.isKeyword = function (c) {
 };
 Vim.prototype.parseMotion = function (motion) {
   function exclusive_motion(from, to, last, dest) {
-    return {from: from, to: to, lastIncluded: last || to-1, dest: dest || to, linewise: false};
+    return {from: from, to: to,
+      lastIncluded: 'undefined' == typeof last ? to-1 : last,
+      dest: 'undefined' == typeof dest ? to : dest,
+      linewise: false};
   }
   function inclusive_motion(from, to) {
     return {from: from, to: to, lastIncluded: to, dest: to-1, linewise: false};
   }
   function backwards_exclusive_motion(from, to, last) {
-    return {from: from, to: to, lastIncluded: last || to-1, dest: from, linewise: false};
+    return {from: from, to: to,
+      lastIncluded: 'undefined' == typeof last ? to-1 : last,
+      dest: from,
+      linewise: false};
   }
   function backwards_inclusive_motion(from, to) {
     return {from: from, to: to, lastIncluded: to, dest: from, linewise: false};
