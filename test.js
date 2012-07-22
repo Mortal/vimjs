@@ -5,12 +5,12 @@ function vimescape(s) {
 var res;
 var counter;
 var tests = 0;
+var testfails = 0;
 function t(type, expect) {
   var line = document.createElement('div');
   line.className = 'line';
   line.appendChild(document.createTextNode(vimescape(type)));
   res.appendChild(line);
-  setCounter(++tests);
   var v = new Vim();
   var buf = 'Couldn\'t get buffer';
   try {
@@ -21,6 +21,7 @@ function t(type, expect) {
     } else {
       line.className += ' bad';
       line.title = 'Expected:\n'+expect+'\nbut got exception:\n'+e;
+      testfails++;
       return;
     }
   }
@@ -29,11 +30,14 @@ function t(type, expect) {
   } else {
     line.className += ' bad';
     line.title = 'Expected:\n'+expect+'\nbut got:\n'+buf;
+    testfails++;
   }
+  setCounter(++tests, testfails);
 }
-function setCounter(n) {
+function setCounter(n, failn) {
   if (n == 1) n += ' test';
-  else n += ' tests';
+  else if (failn == 1) n += ' tests, 1 failure.';
+  else n += ' tests, ' + failn + ' failures.';
   counter.innerHTML = n;
 }
 window.onload = function () {
@@ -41,7 +45,7 @@ window.onload = function () {
   res.id = 'testresults';
   document.body.appendChild(res);
   counter = document.body.appendChild(document.createElement('span'));
-  setCounter(0);
+  setCounter(0,0);
   // Normal mode keys that enter insert mode
   t('ihej\x1b', 'hej\n');
   t('Ahej\x1b', 'hej\n');
