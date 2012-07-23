@@ -5,6 +5,7 @@ function g() {
   return true;
 }
 function Mode() {
+  this.startPos = 0;
 }
 function Linewise(s) { this.s = s; }
 Linewise.prototype.toString = function () { return this.s; };
@@ -37,6 +38,7 @@ Registers.prototype.set = function (str) {
 };
 function Vim() {
   this.mode = Mode.NORMAL;
+  this.options = {backspace:''}
   this.buffer = '\n';
   this.cursor = 0;
   this.operatorpending = null;
@@ -46,6 +48,17 @@ function Vim() {
   this.changeList = [''];
   this.changeListLength = 1;
   this.changeListPosition = 0;
+}
+Vim.prototype.setMode = function(mode) {
+  if(mode == Mode.INSERT)
+    mode.startPos = this.cursor;
+  this.mode = mode;
+}
+Vim.prototype.setOpt = function(key, val) {
+  if(val == undefined)
+    this.options = key;
+  else
+    this.options[key] = val;
 }
 Vim.prototype.changeText = function (i, j, s, opt) {
   if (!opt) opt = {};
@@ -297,18 +310,18 @@ Vim.prototype.input = function (str) {
             if (this.buffer[this.cursor] != '\n') ++this.cursor;
             // fallthru
           case 'i':
-            this.mode = Mode.INSERT;
+            this.setMode(Mode.INSERT);
             this.lastChange = c;
             break;
           case 's':
             if (this.buffer.charAt(this.cursor) != '\n')
               this.changeText(this.cursor, this.cursor+1, '');
-            this.mode = Mode.INSERT;
+            this.setMode(Mode.INSERT);
             break;
           case 'D':
           case 'C':
             this.changeText(this.cursor, this.lineEnd(), '');
-            if (c == 'C') this.mode = Mode.INSERT;
+            if (c == 'C') this.setMode(Mode.INSERT);
             this.cursor = this.lineEnd();
             this.lastChange = c;
             break;
@@ -338,7 +351,7 @@ Vim.prototype.input = function (str) {
             var curs = this.cursor;
             this.changeText(i, j, (linewise && c == 'c') ? '\n' : '', {linewise: linewise});
             if (c == 'c')
-              this.mode = Mode.INSERT;
+              this.setMode(Mode.INSERT);
             else if (c == 'y') {
               this.input('P');
               this.cursor = curs;
@@ -351,14 +364,14 @@ Vim.prototype.input = function (str) {
           case 'o':
             this.cursor = this.lineEnd();
             this.addText('\n');
-            this.mode = Mode.INSERT;
+            this.setMode(Mode.INSERT);
             this.lastChange = c;
             break;
           case 'O':
             this.cursor = this.lineBegin();
             this.addText('\n');
             --this.cursor;
-            this.mode = Mode.INSERT;
+            this.setMode(Mode.INSERT);
             this.lastChange = c;
             break;
           case 'j':
@@ -415,13 +428,14 @@ Vim.prototype.input = function (str) {
         break;
       case Mode.INSERT:
         if (c == '\x1b') {
-          this.mode = Mode.NORMAL;
+          this.setMode(Mode.NORMAL);
           if (this.cursor && this.buffer.charAt(this.cursor-1) != '\n')
             --this.cursor;
           break;
         }
         else if (c == '\b') {
-          this.changeText(this.cursor-1, this.cursor, '', {noyank:true});
+          if(this.options.backspace == 2 || this.mode.startPos != undefined && this.mode.startPos < this.cursor)
+            this.changeText(this.cursor-1, this.cursor, '', {noyank:true});
           break;
         }
         else if (c == '\x7f') {

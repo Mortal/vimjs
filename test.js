@@ -15,6 +15,8 @@ function t(type, expect, vimopt) {
   line.appendChild(document.createTextNode(vimescape(type)));
   res.appendChild(line);
   var v = new Vim();
+  if(vimopt != undefined)
+    v.setOpt(vimopt);
   var buf = 'Couldn\'t get buffer';
   try {
     v.input(type);
