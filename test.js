@@ -1,6 +1,8 @@
+// http://mathiasbynens.be/notes/javascript-escapes#hexadecimal)
 function vimescape(s) {
   return s.replace(/\x1b/g, '<Esc>')
-    .replace(/\n/g, '<CR>');
+          .replace(/\ch/g, '<BS>')
+          .replace(/\n/g, '<CR>')
 }
 var res;
 var counter;
@@ -99,6 +101,9 @@ window.onload = function () {
   t('iab cd\x1b0ceef', 'ef cd\n');
   // x
   t('iabc\x1bx', 'ab\n');
+  // backspace
+  t('iabc\b', 'ab\n');
+  t('iabc\x1bi\b', 'abc\n'); // Backspace doesn't, by default, delete before mode starting point
   // A
   t('iaaa\x1b0Abbb', 'aaabbb\n');
   // S

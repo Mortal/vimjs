@@ -418,6 +418,10 @@ Vim.prototype.input = function (str) {
             --this.cursor;
           break;
         }
+        else if (c == '\b') {
+          this.changeText(this.cursor-1, this.cursor, '', {noyank:true});
+          break;
+        }
         this.addText(c);
         break;
     }
