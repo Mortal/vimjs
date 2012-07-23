@@ -42,7 +42,7 @@ function update() {
   vimdiv.textContent = buf;
   statuslinediv.textContent = vim.getStatusline();
 }
-document.addEventListener('keydown', function (ev) {
+var onKey = function(ev) {
   var k = keyDownToChar(ev);
   try {
     vim.input(k);
@@ -59,5 +59,7 @@ document.addEventListener('keydown', function (ev) {
   }
   ev.preventDefault();
   update();
-}, false);
+}
+document.addEventListener('keydown', onKey, false);
+document.addEventListener('keypress', onKey, false);
 // vim:set sw=2 sts=2 et:
