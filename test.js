@@ -1,14 +1,15 @@
 // http://mathiasbynens.be/notes/javascript-escapes#hexadecimal)
 function vimescape(s) {
   return s.replace(/\x1b/g, '<Esc>')
-          .replace(/\ch/g, '<BS>')
-          .replace(/\n/g, '<CR>')
+          .replace(/\x7f/g, '<Del>')
+          .replace(/\ch/g,  '<BS>')
+          .replace(/\n/g,   '<CR>')
 }
 var res;
 var counter;
 var tests = 0;
 var testfails = 0;
-function t(type, expect) {
+function t(type, expect, vimopt) {
   var line = document.createElement('div');
   line.className = 'line';
   line.appendChild(document.createTextNode(vimescape(type)));
@@ -101,9 +102,14 @@ window.onload = function () {
   t('iab cd\x1b0ceef', 'ef cd\n');
   // x
   t('iabc\x1bx', 'ab\n');
+  // DEL
+  t('iabc\x1b\x7f', 'ab\n');
+  t('iabc\x1bha\x7f', 'ab\n');
+  t('iabc\x1bhi\x7f', 'ac\n');
   // backspace
   t('iabc\b', 'ab\n');
   t('iabc\x1bi\b', 'abc\n'); // Backspace doesn't, by default, delete before mode starting point
+  t('iabc\x1bi\b', 'ac\n', {backspace:2}); // With this option, it does.
   // A
   t('iaaa\x1b0Abbb', 'aaabbb\n');
   // S

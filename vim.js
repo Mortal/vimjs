@@ -371,6 +371,8 @@ Vim.prototype.input = function (str) {
             this.moveLines(-1);
             this.setLineOffset(lineOffset);
             break;
+          case '\x7f':
+            // Just fallthrough to x
           case 'x':
             this.changeText(this.cursor, this.cursor+1, '');
             this.cursorFixup();
@@ -420,6 +422,10 @@ Vim.prototype.input = function (str) {
         }
         else if (c == '\b') {
           this.changeText(this.cursor-1, this.cursor, '', {noyank:true});
+          break;
+        }
+        else if (c == '\x7f') {
+          this.changeText(this.cursor, this.cursor+1, '', {noyank:true});
           break;
         }
         this.addText(c);

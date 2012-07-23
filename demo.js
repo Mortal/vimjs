@@ -18,6 +18,7 @@ document.addEventListener('keydown', function (ev) {
   if (kc == 13) k = '\n';
   else if (kc == 190) k = '.';
   else if (kc == 188) k = ',';
+  else if (kc == 46) k = '\x7f';
   else if (kc == 8) k = '\b';
   else k = String.fromCharCode(kc);
   if (!ev.shiftKey) k = k.toLowerCase();
