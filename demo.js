@@ -1,3 +1,34 @@
+// Input mapping
+var keyMap = {
+  8:   '\b',
+  13:  '\n',
+  46:  '\x7f', // Delete
+  188: ',',
+  190: '.'
+}
+function keyDownToChar(ev) { // This function is going to be quite the beast.
+  var kc = ev.keyCode;
+  if ((   kc != 27 // Ignore control-characters
+       && kc != 13
+       && kc != 8
+       && kc < 32)
+      || (kc > 111 && kc < 124) // Ignore F-keys
+      ) return '';
+  var k;
+
+  var mapFound = false;
+  for(var code in keyMap)
+    if(kc == code) mapFound = true;
+
+  if(mapFound) k = keyMap[kc];
+  else if(ev.shiftKey) k = String.fromCharCode(kc);
+  else k = String.fromCharCode(kc).toLowerCase();
+
+  console.log(kc,k,ev);
+  return k;
+}
+
+// Vim-visual stuff
 var vimdiv, errordiv, statuslinediv, vim;
 window.onload = function () {
   vimdiv = document.getElementById('vim');
@@ -12,17 +43,7 @@ function update() {
   statuslinediv.textContent = vim.getStatusline();
 }
 document.addEventListener('keydown', function (ev) {
-  var kc = ev.keyCode;
-  if (kc != 27 && kc != 13 && kc != 8 && kc < 32) return;
-  var k;
-  if (kc == 13) k = '\n';
-  else if (kc == 190) k = '.';
-  else if (kc == 188) k = ',';
-  else if (kc == 46) k = '\x7f';
-  else if (kc == 8) k = '\b';
-  else k = String.fromCharCode(kc);
-  if (!ev.shiftKey) k = k.toLowerCase();
-  console.log(kc,k,ev);
+  var k = keyDownToChar(ev);
   try {
     vim.input(k);
   } catch (e) {
