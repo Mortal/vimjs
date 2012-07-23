@@ -1,15 +1,31 @@
-// http://mathiasbynens.be/notes/javascript-escapes#hexadecimal)
+// Helpful escapes: http://mathiasbynens.be/notes/javascript-escapes#hexadecimal)
+var escapes = {
+  '\x1b': '<Esc>',
+  '\x7f': '<Del>',
+  '\x08': '<BS>',
+  '\n':   '<CR>'
+}
 function vimescape(s) {
-  return s.replace(/\x1b/g, '<Esc>')
-          .replace(/\x7f/g, '<Del>')
-          .replace(/\ch/g,  '<BS>')
-          .replace(/\n/g,   '<CR>')
+  var res = s;
+  for(var esc in escapes) {
+    res = res.replace(new RegExp(esc, "g"), escapes[esc].toString());
+  }
+  return res;
+}
+function vimunescape(s) {
+  var res = s;
+  for(var esc in escapes) {
+    res = res.replace(new RegExp(escapes[esc], "g"), esc.toString());
+  }
+  return res;
 }
 var res;
 var counter;
 var tests = 0;
 var testfails = 0;
 function t(type, expect, vimopt) {
+  type = vimunescape(type);
+  expect = vimunescape(expect);
   var line = document.createElement('div');
   line.className = 'line';
   line.appendChild(document.createTextNode(vimescape(type)));
@@ -52,106 +68,106 @@ window.onload = function () {
   counter = document.body.appendChild(document.createElement('span'));
   setCounter(0,0);
   // Normal mode keys that enter insert mode
-  t('ihej\x1b', 'hej\n');
-  t('Ahej\x1b', 'hej\n');
-  t('Chej\x1b', 'hej\n');
-  t('Shej\x1b', 'hej\n');
+  t('ihej<Esc>', 'hej<CR>');
+  t('Ahej<Esc>', 'hej<CR>');
+  t('Chej<Esc>', 'hej<CR>');
+  t('Shej<Esc>', 'hej<CR>');
   // 0, D
-  t('ihej\x1b0Difarvel\x1b', 'farvel\n');
-  t('ihej\nhej\x1b0Difarvel\x1b', 'hej\nfarvel\n');
+  t('ihej<Esc>0Difarvel<Esc>', 'farvel<CR>');
+  t('ihej<CR>hej<Esc>0Difarvel<Esc>', 'hej<CR>farvel<CR>');
   // escape from insert mode moves cursor
-  t('ihej\x1bihej\x1b', 'hehejj\n');
+  t('ihej<Esc>ihej<Esc>', 'hehejj<CR>');
   // o, O
-  t('i1\x1bo2\x1bO3\x1b', '1\n3\n2\n');
+  t('i1<Esc>o2<Esc>O3<Esc>', '1<CR>3<CR>2<CR>');
   // h, l
-  t('iabc\x1bhid', 'adbc\n');
-  t('iabc\x1b0lid', 'adbc\n');
-  t('iab\x1b0llic', 'acb\n');
-  t('ia\nbc\x1b0hid', 'a\ndbc\n');
-  t('ia\x1bhab', 'ab\n');
-  t('lia', 'a\n');
+  t('iabc<Esc>hid', 'adbc<CR>');
+  t('iabc<Esc>0lid', 'adbc<CR>');
+  t('iab<Esc>0llic', 'acb<CR>');
+  t('ia<CR>bc<Esc>0hid', 'a<CR>dbc<CR>');
+  t('ia<Esc>hab', 'ab<CR>');
+  t('lia', 'a<CR>');
   // w
-  t('ia\nb\x1bkwic', 'a\ncb\n');
+  t('ia<CR>b<Esc>kwic', 'a<CR>cb<CR>');
   // e
-  t('iab\x1b0eic', 'acb\n');
-  t('iab cd\x1b0eie', 'aeb cd\n');
-  t('iab cd\x1b0ede', 'a\n');
-  t('iab\ncd\x1bk0ede', 'a\n');
+  t('iab<Esc>0eic', 'acb<CR>');
+  t('iab cd<Esc>0eie', 'aeb cd<CR>');
+  t('iab cd<Esc>0ede', 'a<CR>');
+  t('iab<CR>cd<Esc>k0ede', 'a<CR>');
   // j, k
-  t('iabc\ndef\x1bkig', 'abgc\ndef\n');
-  t('iabc\x1bOdef\x1bjig', 'def\nabgc\n');
-  t('iaa\naaa\x1bkib', 'aba\naaa\n');
-  t('jia', 'a\n');
-  t('iab\n\ncd\x1bkie', 'ab\ne\ncd\n');
+  t('iabc<CR>def<Esc>kig', 'abgc<CR>def<CR>');
+  t('iabc<Esc>Odef<Esc>jig', 'def<CR>abgc<CR>');
+  t('iaa<CR>aaa<Esc>kib', 'aba<CR>aaa<CR>');
+  t('jia', 'a<CR>');
+  t('iab<CR><CR>cd<Esc>kie', 'ab<CR>e<CR>cd<CR>');
   // dd
-  t('iabc\x1bdd', '\n');
-  t('iabc\x1bddidef', 'def\n');
-  t('iaaa\nbbb\x1bkdd', 'bbb\n');
-  t('iaaa\nbbb\nccc\x1bkkdd', 'bbb\nccc\n');
-  t('iaaa\nbbb\x1bdd', 'aaa\n');
-  t('oa\x1bddia', 'a\n');
-  t('ia\x1bddpib', '\nba\n');
-  t('ia\nb\x1bddib', 'ba\n');
+  t('iabc<Esc>dd', '<CR>');
+  t('iabc<Esc>ddidef', 'def<CR>');
+  t('iaaa<CR>bbb<Esc>kdd', 'bbb<CR>');
+  t('iaaa<CR>bbb<CR>ccc<Esc>kkdd', 'bbb<CR>ccc<CR>');
+  t('iaaa<CR>bbb<Esc>dd', 'aaa<CR>');
+  t('oa<Esc>ddia', 'a<CR>');
+  t('ia<Esc>ddpib', '<CR>ba<CR>');
+  t('ia<CR>b<Esc>ddib', 'ba<CR>');
   // dh, dl
-  t('iab\x1bdh', 'b\n');
-  t('iab\x1bdl', 'a\n');
+  t('iab<Esc>dh', 'b<CR>');
+  t('iab<Esc>dl', 'a<CR>');
   // cc
-  t('iabc\x1bccdef', 'def\n');
+  t('iabc<Esc>ccdef', 'def<CR>');
   // cw, dw
-  t('iabc def\x1b0cwhej\x1b', 'hej def\n');
-  t('iabc def\x1b0dwihej\x1b', 'hejdef\n');
+  t('iabc def<Esc>0cwhej<Esc>', 'hej def<CR>');
+  t('iabc def<Esc>0dwihej<Esc>', 'hejdef<CR>');
   // ce
-  t('iab cd\x1b0ceef', 'ef cd\n');
+  t('iab cd<Esc>0ceef', 'ef cd<CR>');
   // x
-  t('iabc\x1bx', 'ab\n');
+  t('iabc<Esc>x', 'ab<CR>');
   // DEL
-  t('iabc\x1b\x7f', 'ab\n');
-  t('iabc\x1bha\x7f', 'ab\n');
-  t('iabc\x1bhi\x7f', 'ac\n');
+  t('iabc<Esc><Del>', 'ab<CR>');
+  t('iabc<Esc>ha<Del>', 'ab<CR>');
+  t('iabc<Esc>hi<Del>', 'ac<CR>');
   // backspace
-  t('iabc\b', 'ab\n');
-  t('iabc\x1bi\b', 'abc\n'); // Backspace doesn't, by default, delete before mode starting point
-  t('iabc\x1bi\b', 'ac\n', {backspace:2}); // With this option, it does.
+  t('iabc\b', 'ab<CR>');
+  t('iabc<Esc>i\b', 'abc<CR>'); // Backspace doesn't, by default, delete before mode starting point
+  t('iabc<Esc>i\b', 'ac<CR>', {backspace:2}); // With this option, it does.
   // A
-  t('iaaa\x1b0Abbb', 'aaabbb\n');
+  t('iaaa<Esc>0Abbb', 'aaabbb<CR>');
   // S
-  t('iaaa\x1b0Sbbb', 'bbb\n');
+  t('iaaa<Esc>0Sbbb', 'bbb<CR>');
   // C
-  t('iaaa\x1b0lCbb', 'abb\n');
+  t('iaaa<Esc>0lCbb', 'abb<CR>');
   // p
-  t('ia\x1bxp', 'a\n');
-  t('iab\x1bxp', 'ab\n');
-  t('iaa\nbb\x1bdd0p', 'aa\nbb\n');
-  t('ia\x1bxpp', 'aa\n');
+  t('ia<Esc>xp', 'a<CR>');
+  t('iab<Esc>xp', 'ab<CR>');
+  t('iaa<CR>bb<Esc>dd0p', 'aa<CR>bb<CR>');
+  t('ia<Esc>xpp', 'aa<CR>');
   // P
-  t('oa\x1bddP', 'a\n\n');
-  t('iab\x1b0dlP', 'ab\n');
+  t('oa<Esc>ddP', 'a<CR><CR>');
+  t('iab<Esc>0dlP', 'ab<CR>');
   // u
-  t('iaaa\nbbb\x1bddu', 'aaa\nbbb\n');
-  t('ifoo bar baz\x1b0dwwdwuaa', 'bar a\n');
+  t('iaaa<CR>bbb<Esc>ddu', 'aaa<CR>bbb<CR>');
+  t('ifoo bar baz<Esc>0dwwdwuaa', 'bar a<CR>');
   // a
-  t('ia\x1bab', 'ab\n');
+  t('ia<Esc>ab', 'ab<CR>');
   // space
-  t('iab\ncd\x1bk ie', 'ab\necd\n');
+  t('iab<CR>cd<Esc>k ie', 'ab<CR>ecd<CR>');
   // y
-  t('ia\x1bylp', 'aa\n');
+  t('ia<Esc>ylp', 'aa<CR>');
   // repeat last change
-  t('iabc\x1bx.', 'a\n');
+  t('iabc<Esc>x.', 'a<CR>');
   // s
-  t('ia\x1bsb', 'b\n');
+  t('ia<Esc>sb', 'b<CR>');
   // d$
-  t('iabc\x1b0ld$', 'a\n');
+  t('iabc<Esc>0ld$', 'a<CR>');
   // counts
-  t('ifoo bar baz\x1b02wicoq', 'foo bar coqbaz\n');
-  t('ifoo bar baz\x1b02eicoq', 'foo bacoqr baz\n');
-  t('ithis ABC DE line\x1b0wd2w', 'this line\n');
+  t('ifoo bar baz<Esc>02wicoq', 'foo bar coqbaz<CR>');
+  t('ifoo bar baz<Esc>02eicoq', 'foo bacoqr baz<CR>');
+  t('ithis ABC DE line<Esc>0wd2w', 'this line<CR>');
   // r
-  t('ia\x1brb', 'b\n');
+  t('ia<Esc>rb', 'b<CR>');
   // %
-  t('i(f(o)o)(baz)\x1b0%ibar', '(f(o)obar)(baz)\n');
+  t('i(f(o)o)(baz)<Esc>0%ibar', '(f(o)obar)(baz)<CR>');
   // f
-  t('iqwesd\x1b0fsia', 'qweasd\n');
+  t('iqwesd<Esc>0fsia', 'qweasd<CR>');
   // ;
-  t('ialaala\x1b0fa;ik', 'alakala\n');
+  t('ialaala<Esc>0fa;ik', 'alakala<CR>');
 };
 // vim:set sw=2 sts=2 et:
