@@ -25,6 +25,7 @@ function keyDownToChar(ev) { // This function is going to be quite the beast.
   else k = String.fromCharCode(kc).toLowerCase();
 
   console.log(kc,k,ev);
+  ev.preventDefault();
   return k;
 }
 
@@ -57,9 +58,7 @@ var onKey = function(ev) {
       throw e;
     }
   }
-  ev.preventDefault();
   update();
 }
 document.addEventListener('keydown', onKey, false);
-document.addEventListener('keypress', onKey, false);
 // vim:set sw=2 sts=2 et:
