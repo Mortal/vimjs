@@ -289,6 +289,7 @@ Vim.prototype.parseMotion = function (motion) {
   }
 };
 Vim.prototype.input = function (str) {
+  var success = true;
   for (var inputOffset = 0, l = str.length; g() && inputOffset < l;) {
     function nextc() {
       if (inputOffset < str.length)
@@ -422,6 +423,7 @@ Vim.prototype.input = function (str) {
                 this.cursor = movement.dest;
               } else {
                 console.log("Couldn't parse ",motion);
+                success = false;
               }
             }
         }
@@ -446,6 +448,7 @@ Vim.prototype.input = function (str) {
         break;
     }
   }
+  return success;
 };
 Vim.prototype.getBuffer = function () {
   return this.buffer;
