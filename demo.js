@@ -4,6 +4,8 @@ function keydebug() {
     : null;
 }
 function translate_key_down(ev) { // This function is going to be quite the beast.
+  if (ev.altKey) return null;
+
   var kc = ev.keyCode;
   keydebug("Key code ",kc);
   // Input mapping
