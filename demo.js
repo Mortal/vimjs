@@ -51,17 +51,31 @@ function translate_key_press(ev) {
   return c;
 }
 // Vim-visual stuff
-var vimdiv, errordiv, statuslinediv, vim;
+var vimdiv, elementBefore, elementCursor, elementAfter, errordiv, statuslinediv, vim;
 window.onload = function () {
   vimdiv = document.getElementById('vim');
+  elementBefore = document.createElement('span');
+  elementCursor = document.createElement('span');
+  elementAfter = document.createElement('span');
+  vimdiv.appendChild(elementBefore);
+  vimdiv.appendChild(elementCursor);
+  vimdiv.appendChild(elementAfter);
+  elementCursor.style.display = 'inline-block';
+  elementCursor.style.width = '1em';
+  elementCursor.style.marginRight = '-.7em';
+  elementCursor.style.marginLeft = '-.3em';
   vim = new Vim();
   statuslinediv = document.getElementById('statusline');
 };
 function update() {
   var buf = vim.getBuffer();
   var cur = vim.cursor;
-  buf = buf.substring(0, cur)+'|'+buf.substring(cur, buf.length);
-  vimdiv.textContent = buf;
+  elementBefore.textContent = buf.substring(0, cur);
+  elementCursor.textContent = '|';
+  elementAfter.textContent = buf.substring(cur, buf.length);
+  var minScroll = elementCursor.offsetTop - document.documentElement.clientHeight + elementCursor.scrollHeight;
+  var maxScroll = elementCursor.offsetTop;
+  document.documentElement.scrollTop = Math.min(maxScroll, Math.max(minScroll, document.documentElement.scrollTop));
   statuslinediv.textContent = vim.getStatusline();
 }
 function vimescape(k) {
