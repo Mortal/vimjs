@@ -45,7 +45,7 @@ function Vim() {
   this.registers = new Registers();
   this.lastChange = ''; // used by dot
 
-  this.changeList = [''];
+  this.changeList = [[0,'']];
   this.changeListLength = 1;
   this.changeListPosition = 0;
 }
