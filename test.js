@@ -74,6 +74,7 @@ window.onload = function () {
   t('Shej<Esc>', 'hej<CR>');
   // 0, D
   t('ihej<Esc>0Difarvel<Esc>', 'farvel<CR>');
+  t('iabdx<Esc>Dic<Esc>', 'abcd<CR>');
   t('ihej<CR>hej<Esc>0Difarvel<Esc>', 'hej<CR>farvel<CR>');
   // escape from insert mode moves cursor
   t('ihej<Esc>ihej<Esc>', 'hehejj<CR>');
