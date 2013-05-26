@@ -321,9 +321,18 @@ Vim.prototype.input = function (str) {
             break;
           case 'D':
           case 'C':
-            this.changeText(this.cursor, this.lineEnd(), '');
+            var removed = this.changeText(this.cursor, this.lineEnd(), '');
+            var begin = this.lineBegin();
+            var end = this.lineEnd();
             if (c == 'C') this.setMode(Mode.INSERT);
-            this.cursor = this.lineEnd();
+            if (c == 'D') {
+              if(removed != '')
+              {
+                this.cursor = end - 1;
+                if(this.cursor < begin)
+                  this.cursor = begin;
+              }
+            }
             this.lastChange = c;
             break;
           case 'd':
