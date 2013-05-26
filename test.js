@@ -1,8 +1,8 @@
 // Helpful escapes: http://mathiasbynens.be/notes/javascript-escapes#hexadecimal)
 var escapes = {
-  '\x1b': '<Esc>',
-  '\x7f': '<Del>',
   '\x08': '<BS>',
+  '\x7f': '<Del>',
+  '\x1b': '<Esc>',
   '\n':   '<CR>'
 }
 function vimescape(s) {
