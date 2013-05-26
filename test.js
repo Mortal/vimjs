@@ -19,8 +19,6 @@ function vimunescape(s) {
   }
   return res;
 }
-var res;
-var counter;
 var tests = 0;
 var testfails = 0;
 function t(type, expect, vimopt) {
@@ -29,7 +27,6 @@ function t(type, expect, vimopt) {
   var line = document.createElement('div');
   line.className = 'line';
   line.appendChild(document.createTextNode(vimescape(type)));
-  res.appendChild(line);
   var v = new Vim();
   if(vimopt != undefined)
     v.setOpt(vimopt);
@@ -41,16 +38,23 @@ function t(type, expect, vimopt) {
     if (e instanceof InfiniteLoop) {
     } else {
       line.className += ' bad';
-      line.title = 'Expected:\n'+expect+'\nbut got exception:\n'+e;
+      var expected = document.createElement('div');
+      expected.innerHTML = line.title = 'Expected:\n'+expect+'\nbut got exception:\n'+e;
+      line.appendChild(expected);
+      failures.appendChild(line);
       testfails++;
       return;
     }
   }
   if (buf == expect) {
     line.className += ' good';
+    successes.appendChild(line);
   } else {
     line.className += ' bad';
-    line.title = 'Expected:\n'+expect+'\nbut got:\n'+buf;
+    var expected = document.createElement('div');
+    line.appendChild(expected);
+    expected.innerHTML = line.title = 'Expected:\n'+expect+'\nbut got:\n'+buf;
+    failures.appendChild(line);
     testfails++;
   }
   setCounter(++tests, testfails);
@@ -62,10 +66,6 @@ function setCounter(n, failn) {
   counter.innerHTML = n;
 }
 window.onload = function () {
-  res = document.createElement('div');
-  res.id = 'testresults';
-  document.body.appendChild(res);
-  counter = document.body.appendChild(document.createElement('span'));
   setCounter(0,0);
   // Normal mode keys that enter insert mode
   t('ihej<Esc>', 'hej<CR>');
