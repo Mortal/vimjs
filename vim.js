@@ -401,6 +401,9 @@ Vim.prototype.input = function (str) {
             this.cursorFixup();
             this.lastChange = c;
             break;
+          case 'r':
+            this.changeText(this.cursor, this.cursor+1, nextc());
+            break;
           case 'P':
           case 'p':
             var reg = this.registers.get();
